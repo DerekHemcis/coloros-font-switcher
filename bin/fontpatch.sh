@@ -23,6 +23,7 @@ case "$KIND" in
   EN) B64='AE8AUABsAHUAcwBTAGEAbgBzAEUAbg==' ;;                         # OPlusSansEn
   SC) B64='AE8AUABQAE8AXwBTAGEAbgBzAF8ANAAuADAAXwBTAEM=' ;;           # OPPO_Sans_4.0_SC
   TC) B64='AE8AUABQAE8AXwBTAGEAbgBzAF8ANAAuADAAXwBUAEM=' ;;           # OPPO_Sans_4.0_TC
+  EXT) B64='AE8AUwBhAG4AcwAtAEUAeAB0AC0AUgBlAGcAdQBsAGEAcg==' ;;      # OSans-Ext-Regular
   *) echo "fontpatch: 未知类型 $KIND" >&2; exit 1 ;;
 esac
 echo "$B64" | $BB base64 -d > "$T/ps.bin" || exit 1
