@@ -1,0 +1,6 @@
+id=coloros_font_switcher
+name=ColorOS 通用字体安装器
+version=v1.0.0
+versionCode=100
+author=Minis
+description=把任意 TTF/OTF 一键设为 ColorOS 系统字体。字体放到 /sdcard/Fonts/ 后，点模块的「执行」按钮或运行 apply.sh 即可即时替换，无需重新刷模块。
