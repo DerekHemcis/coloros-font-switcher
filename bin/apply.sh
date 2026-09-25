@@ -7,6 +7,8 @@
 SELF="${0%/*}"
 MODDIR="${SELF%/*}"
 
+umask 022
+
 BB=/data/adb/ksu/bin/busybox
 [ -x "$BB" ] || BB=busybox
 
@@ -72,6 +74,10 @@ sh "$MODDIR/bin/fontpatch.sh" "$FONTFILE" "$WORK/SysSans-Hant-Regular.ttf" TC  |
 
 # 保存一份供开机自动应用
 $BB cp -f "$FONTFILE" "$SAVED" 2>/dev/null
+
+# 关键: 修正权限与属主 (从 /sdcard 复制来的字体权限可能是 600/660, 应用进程读不到)
+$BB chmod 0644 "$WORK"/*.ttf 2>/dev/null
+$BB chown root:root "$WORK"/*.ttf 2>/dev/null
 
 # 清理已有挂载(避免多层堆叠; 被占用的用 lazy 卸载)
 clean_mount() {
