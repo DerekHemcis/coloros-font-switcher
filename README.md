@@ -95,6 +95,21 @@ su -c "sh /data/adb/modules/coloros_font_switcher/bin/apply.sh /sdcard/Fonts/你
 
 ---
 
+
+### ⚠️ 关于 KernelSU 防变砖 (anti-bootloop)
+
+**本模块的开机脚本只做"挂载"，不做"生成"。**
+
+生成字体副本（6 份、约 200MB 读写）只在**你点「执行」按钮时**做一次；
+开机时直接复用已生成的文件，耗时不到 1 秒。
+
+> 早期版本在开机时才生成，导致启动负担过重，
+> 可能触发 ColorOS / KernelSU 的异常检测，**把设备上所有模块一起禁用**。
+> v1.2.0 已修复。
+
+如果你遇到"所有模块突然失效"：通常是 KernelSU 防变砖保护触发了，
+到 KernelSU Manager 里把各模块重新启用（移除模块目录下的 `disable` 文件）再重启即可。
+
 ## 🗂 生成的文件
 
 ```

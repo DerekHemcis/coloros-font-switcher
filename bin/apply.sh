@@ -40,12 +40,13 @@ kind_of() {
 }
 
 # ---------- 参数解析 ----------
-FONTFILE=""; NORESTART=0
+FONTFILE=""; NORESTART=0; MOUNTONLY=0
 for a in "$@"; do
     case "$a" in
-        --no-restart) NORESTART=1 ;;
-        --*)          : ;;
-        *)            [ -f "$a" ] && FONTFILE="$a" ;;
+        --no-restart)  NORESTART=1 ;;
+        --mount-only)  MOUNTONLY=1; NORESTART=1 ;;
+        --*)           : ;;
+        *)             [ -f "$a" ] && FONTFILE="$a" ;;
     esac
 done
 
@@ -73,23 +74,27 @@ case "$MAGIC" in
 esac
 
 # ---------- 生成目标文件 ----------
-log "生成字体副本……"
-$BB rm -f "$WORK"/*.ttf "$WORK"/*.otf 2>/dev/null
-for f in $TARGETS; do
-    K=$(kind_of "$f")
-    if sh "$MODDIR/bin/fontpatch.sh" "$FONTFILE" "$WORK/$f" "$K" >>"$LOG" 2>&1; then
-        log "  ✓ 生成 $f ($K)"
-    else
-        log "  ✗ 生成失败 $f ($K)"
-    fi
-done
+if [ "$MOUNTONLY" = "1" ]; then
+    log "只挂载模式: 跳过生成, 复用已有文件"
+else
+    log "生成字体副本……"
+    $BB rm -f "$WORK"/*.ttf "$WORK"/*.otf 2>/dev/null
+    for f in $TARGETS; do
+        K=$(kind_of "$f")
+        if sh "$MODDIR/bin/fontpatch.sh" "$FONTFILE" "$WORK/$f" "$K" >>"$LOG" 2>&1; then
+            log "  ✓ 生成 $f ($K)"
+        else
+            log "  ✗ 生成失败 $f ($K)"
+        fi
+    done
 
-# 关键: 修正权限与属主 (从 /sdcard 复制来的字体权限可能是 600/660, 应用进程读不到)
-$BB chmod 0644 "$WORK"/* 2>/dev/null
-$BB chown root:root "$WORK"/* 2>/dev/null
+    # 关键: 修正权限与属主 (从 /sdcard 复制来的字体权限可能是 600/660, 应用进程读不到)
+    $BB chmod 0644 "$WORK"/* 2>/dev/null
+    $BB chown root:root "$WORK"/* 2>/dev/null
 
-# 保存一份供开机自动应用
-$BB cp -f "$FONTFILE" "$SAVED" 2>/dev/null
+    # 保存一份供开机自动应用
+    $BB cp -f "$FONTFILE" "$SAVED" 2>/dev/null
+fi
 
 # ---------- 挂载 ----------
 clean_mount() {
